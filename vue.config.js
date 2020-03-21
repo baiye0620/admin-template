@@ -14,7 +14,6 @@ module.exports = {
   publicPath: '/',
   outputDir: 'dist',
   assetsDir: 'static',
-  lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
     port: port,
@@ -30,8 +29,7 @@ module.exports = {
         changeOrigin: true
       }
     },
-    after: app => {},
-    before: require('./mock/mock-server.js')
+    before: app => {}
   },
   configureWebpack: {
     name: name,

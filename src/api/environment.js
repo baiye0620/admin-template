@@ -29,7 +29,10 @@ switch (process.env.NODE_ENV) {
     break
   default:
     // 默认开发
-    baseUrl = 'http://192.168.1.13:9999'
+    envApi = {
+      web: 'http://192.168.1.13:9999',
+      websocket: '://192.168.1.13:9999'
+    }
     break
 }
 

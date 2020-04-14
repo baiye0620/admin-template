@@ -1,125 +1,96 @@
 import api from '@/api'
 import {
-  getToken,
-  setToken,
-  removeToken
-} from '@/utils/auth'
-import {
   resetRouter
 } from '@/router'
 
-const getDefaultState = () => {
-  return {
-    token: getToken(),
+const user = {
+  state: {
     name: '',
-    avatar: ''
-  }
-}
-
-const state = getDefaultState()
-
-const mutations = {
-  RESET_STATE: (state) => {
-    Object.assign(state, getDefaultState())
+    avatar: '',
+    authorization: {},
+    userInfo: {}
   },
-  SET_TOKEN: (state, token) => {
-    state.token = token
+  mutations: {
+    SET_AUTHOR: (state, data) => {
+      state.authorization = data
+    },
+    SET_USERINFO: (state, data) => {
+      state.userInfo = data
+    },
+    SET_NAME: (state, name) => {
+      state.name = name
+    },
+    SET_AVATAR: (state, avatar) => {
+      state.avatar = avatar
+    }
   },
-  SET_NAME: (state, name) => {
-    state.name = name
-  },
-  SET_AVATAR: (state, avatar) => {
-    state.avatar = avatar
-  }
-}
-
-const actions = {
-  // user login
-  login({
-    commit
-  }, userInfo) {
-    const {
-      username,
-      password
-    } = userInfo
-    return new Promise((resolve, reject) => {
-      api.login({
-        username: username.trim(),
-        password: password
-      }).then(response => {
-        const {
-          data
-        } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
+  actions: {
+    login({
+      commit
+    }, userInfo) {
+      return new Promise((resolve, reject) => {
+        commit('SET_AUTHOR', {
+          token: 'adminToken'
+        })
         resolve()
-      }).catch(error => {
-        reject(error)
+        // api.login(userInfo).then(response => {
+        //   response.messageId === 200 && commit('SET_AUTHOR', response)
+        //   resolve(response)
+        // }).catch(error => {
+        //   reject(error)
+        // })
       })
-    })
-  },
+    },
 
-  // get user info
-  getInfo({
-    commit,
-    state
-  }) {
-    return new Promise((resolve, reject) => {
-      api.getInfo(state.token).then(response => {
-        const {
-          data
-        } = response
+    setUserInfo: ({
+      commit
+    }, data) => {
+      commit('SET_USERINFO', data)
+    },
 
-        if (!data) {
-          reject('Verification failed, please Login again.')
-        }
+    // get user info
+    getInfo({
+      commit,
+      state
+    }) {
+      return new Promise((resolve, reject) => {
+        api.getInfo(state.token).then(response => {
+          const {
+            data
+          } = response
+          const {
+            name,
+            avatar
+          } = data
 
-        const {
-          name,
-          avatar
-        } = data
-
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        resolve(data)
-      }).catch(error => {
-        reject(error)
+          commit('SET_NAME', name)
+          commit('SET_AVATAR', avatar)
+          resolve(data)
+        }).catch(error => {
+          reject(error)
+        })
       })
-    })
-  },
+    },
 
-  // user logout
-  logout({
-    commit,
-    state
-  }) {
-    return new Promise((resolve, reject) => {
-      api.logout(state.token).then(() => {
-        removeToken() // must remove  token  first
+    // user logout
+    logout({
+      commit,
+      state
+    }) {
+      return new Promise((resolve, reject) => {
+        console.log(123)
+        commit('SET_AUTHOR', {})
         resetRouter()
-        commit('RESET_STATE')
         resolve()
-      }).catch(error => {
-        reject(error)
+        // api.logout(state.authorization.access_token).then(() => {
+        //   resetRouter()
+        //   resolve()
+        // }).catch(error => {
+        //   reject(error)
+        // })
       })
-    })
-  },
-
-  // remove token
-  resetToken({
-    commit
-  }) {
-    return new Promise(resolve => {
-      removeToken() // must remove  token  first
-      commit('RESET_STATE')
-      resolve()
-    })
+    }
   }
 }
 
-export default {
-  namespaced: true,
-  state,
-  mutations,
-  actions
-}
+export default user

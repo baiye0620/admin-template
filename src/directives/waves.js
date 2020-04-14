@@ -44,7 +44,6 @@ function handleClick(el, binding) {
       return false
     }
   }
-  console.log(el[context])
   if (!el[context]) {
     el[context] = {
       removeHandle: handle
